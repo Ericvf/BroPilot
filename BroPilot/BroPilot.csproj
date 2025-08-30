@@ -6,19 +6,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="__..___001_small.png" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
 		<PackageReference Include="System.Text.Json" Version="8.0.6" />
 		<PackageReference Include="WPF-UI.Markdown" Version="4.0.2" />
 	</ItemGroup>
-
-	<!--<ItemGroup>
-	  <ProjectReference Include="..\..\wpfui.markdown\src\Wpf.Ui.Markdown\Wpf.Ui.Markdown.csproj" />
-	</ItemGroup>-->
 
 	<ItemGroup>
 	  <Resource Include="__..___001_small.png" />
