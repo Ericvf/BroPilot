@@ -1,0 +1,209 @@
+﻿<UserControl x:Class="BroPilot.ChatWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BroPilot.ViewModels"
+             xmlns:converters="clr-namespace:BroPilot.Converters"
+             xmlns:wpf="clr-namespace:BroPilot.Wpf"
+             xmlns:md="http://schemas.lepo.co/wpfui/2022/xaml/markdown"
+             mc:Ignorable="d" 
+             d:DesignHeight="1000" d:DesignWidth="400"
+             d:DataContext="{d:DesignInstance Type=local:ChatWindowViewModel, IsDesignTimeCreatable=True}">
+    <UserControl.Resources>
+        <converters:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVisibilityConverter"/>
+        <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+
+        <LinearGradientBrush x:Key="GrayPurpleGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Offset="0" Color="#D4C3E6"/>
+            <GradientStop Offset="1" Color="#BBA2D5"/>
+        </LinearGradientBrush>
+        <RadialGradientBrush x:Key="ChatMessageIncomingBrush"
+                         GradientOrigin="0.7,0.3"
+                         Center="0.7,0.3"
+                         RadiusX="1.2" RadiusY="1.2">
+            <GradientStop Color="#FFFFFFFF" Offset="0"/>
+            <GradientStop Color="#FFE8EBF2" Offset="0.5"/>
+            <GradientStop Color="#FFD1D7E5" Offset="1"/>
+        </RadialGradientBrush>
+
+        <LinearGradientBrush x:Key="ChatBorder" StartPoint="0,0" EndPoint="0.5,0.5" SpreadMethod="Repeat">
+            <GradientStop Offset="0.0" Color="#0F24B6"/>
+            <GradientStop Offset="0.5" Color="#0F0743"/>
+            <GradientStop Offset="1.0" Color="#0F24B6"/>
+            <GradientStop Offset="1.5" Color="#0F0743"/>
+            <GradientStop Offset="2.0" Color="#0F24B6"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="ChatBackground" StartPoint="0,0" EndPoint="0,2">
+            <GradientStop Offset="0" Color="#FFC3F7FB"/>
+            <GradientStop Offset="1" Color="#FFEFD2FD"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="ChatStyle" TargetType="Border">
+            
+            <Setter Property="Background" Value="{StaticResource ChatBackground}" />
+            <!--<Setter Property="BorderBrush" Value="{StaticResource ChatBorder}" />-->
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+
+        </Style>
+
+        <Style x:Key="UserStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource ChatMessageIncomingBrush}" />
+        </Style>
+
+        <Style x:Key="ChatStyle2" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource ChatMessageIncomingBrush}" />
+
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Role}" Value="assistant">
+
+                    <Setter Property="Background" Value="{StaticResource ChatBackground}" />
+                    <!--<Setter Property="BorderBrush" Value="{StaticResource ChatBorder}" />-->
+                    <Setter Property="BorderThickness" Value="2" />
+
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+    
+    <Grid Background="{StaticResource GrayPurpleGradient}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="140"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!--Header-->
+            <Grid Margin="5" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0"
+                        Height="30"
+                        VerticalAlignment="Center"
+                        Margin="5" />
+                <Image Source="/BroPilot;component/__..___001_small.png" />
+                <TextBlock Grid.Column="1"
+                       Text="{Binding ChatSession.Title, TargetNullValue='Welcome to BroPilot!'}"
+                       d:Text="Welcome to BroPilot!" 
+                       FontSize="18"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap"
+                       Margin="5" />    
+                <Button Grid.Column="2"
+                    Content="+"
+                    Width="40"
+                    Height="40"
+                    Margin="5"
+                    VerticalAlignment="Center"
+                    Command="{Binding NewSessionCommand}" />
+            </Grid>
+
+            <!--Main-->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" wpf:AutoScrollBehavior.AutoScroll="True">
+                <ItemsControl Margin="5" ItemsSource="{Binding ChatSession.Messages}" >
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border  Style="{StaticResource ChatStyle2}"  HorizontalAlignment="Left"
+                                  CornerRadius="16" 
+                                Visibility="{Binding Content, Converter={StaticResource NullOrEmptyToVisibilityConverter}}"
+                                  Margin="4">
+                                <Grid>
+                                         <!--ParseScripts="{Binding IsComplete}"-->
+                                    <md:MarkdownViewer  Margin="12,12,12,12"
+                                        Markdown="{Binding Content}"  
+                                        Padding="10"                                 />
+
+                                    <TextBlock Text="{Binding Time}" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,6,6" Opacity="0.5"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <!--<Border  Grid.Row="1"  
+                    Style="{StaticResource ChatStyle}"
+                    Height="100"
+                    CornerRadius="16" 
+                    Visibility="{Binding Content, Converter={StaticResource NullOrEmptyToVisibilityConverter}}"
+                    Margin="4"
+                    Padding="12">
+
+                <TextBlock Text="Hi, what can I do for you?"/>
+            </Border>-->
+        </Grid>
+        
+        <!--Input / Footer-->
+        <Grid Margin="4"  Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ProgressBar IsIndeterminate="False" 
+                         Value="{Binding ChatSession.TokenCount}" 
+                         Minimum="0" 
+                         Maximum="{Binding AgentsViewModel.Agent.MaxTokens}"  
+                         Height="6"
+                         Visibility="{Binding AgentsViewModel.Agent.MaxTokens, Converter={StaticResource ZeroToVisibilityConverter}}"
+                         Margin="4,0,4,0" />
+
+            <TextBox Grid.Row="1" wpf:TextBoxHelper.Placeholder="Ask BroPilot a question..."
+                 Text="{Binding Prompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 TextWrapping="Wrap"
+                 AcceptsReturn="True"
+                     Margin="4"
+                 TextAlignment="Left">
+                <TextBox.InputBindings>
+                    <KeyBinding Command="{Binding SubmitCommand}" Key="Enter" />
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <Grid Grid.Row="2" Margin="0,4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!--<TextBlock Grid.Column="0"
+                   Text="📊"
+                   VerticalAlignment="Center"
+                   Margin="0,0,4,0"/>-->
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Model:"
+                           Margin="0,0,10,0"
+                           VerticalAlignment="Center" 
+                    />
+                    <ComboBox
+                        DataContext="{Binding AgentsViewModel}"
+                        ItemsSource="{Binding Agents}"
+                        SelectedValue="{Binding Path=Agent}"
+                        DisplayMemberPath="Name"
+                        HorizontalAlignment="Right"
+                        MinWidth="0"
+                        Height="32"
+                        FontSize="10"
+                        Margin="4"
+                        Width="Auto"
+                    />
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</UserControl>
