@@ -102,21 +102,27 @@
                        Margin="5,0,0,0" />
 
                 <StackPanel Grid.Column="3" Orientation="Horizontal">
-                    <Button 
-                      Content="➕"
+                    <!--<Button 
+                      
                       Width="42"
                       Height="32"
                       Margin="5,0,5,0"
                       VerticalAlignment="Center"
-                      Command="{Binding NewSessionCommand}" />
+                      Command="{Binding NewSessionCommand}" >
+
+                        <Image Source="/BroPilot;component/Icons/add2.png" Width="16" Height="16"  />
+                    </Button>-->
 
                     <Button Grid.Column="3"
-                        Content="🗩"
-                        Width="42"
-                        Height="32"
+                        
+                        Width="50"
+                        Height="40"
                         Margin="5,0,5,0"
                         VerticalAlignment="Center"
-                        Command="{Binding OpenSessionsCommand}" />    
+                        Command="{Binding OpenSessionsCommand}" >
+
+                        <Image Source="/BroPilot;component/Icons/messages.png" Width="24" Height="24"  />
+                    </Button>
                 </StackPanel>
             </Grid>
 
@@ -213,10 +219,25 @@
                         Margin="4"
                         Width="Auto"
                     />
-                    <Button Width="Auto" Height="Auto" VerticalAlignment="Center"  HorizontalAlignment="Left"
-                            Command="{Binding ConfigureCommand}">
-                        ⚙️
+
+                    <Button Command="{Binding ConfigureCommand}" >
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <ContentPresenter />
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+
+                        <Image Source="/BroPilot;component/Icons/gear.png"  Width="24" Height="24" />
                     </Button>
+                    
                 </StackPanel>
             </Grid>
 

@@ -14,6 +14,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Resource Include="Icons\add2.png" />
+	  <Resource Include="Icons\delete2.png" />
+	  <Resource Include="Icons\gear.png" />
+	  <Resource Include="Icons\messages.png" />
+	  <Resource Include="Icons\message_add.png" />
 	  <Resource Include="__..___001_small.png" />
 	</ItemGroup>
 </Project>

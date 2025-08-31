@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace BroPilot.ViewModels
             var files = Directory.GetFiles(path, "*.json");
             var sessions = new List<Session>();
 
-            foreach (var file in files)
+            foreach (var file in files.Where(f => !f.EndsWith("models.json")))
             {
                 try
                 {

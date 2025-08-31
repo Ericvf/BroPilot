@@ -47,15 +47,18 @@
                        TextTrimming="CharacterEllipsis"
                        TextWrapping="NoWrap"
                        Margin="5,0,0,0" />
-                <Button Grid.Column="3"
-                  Content="➕"
-                  Width="42"
-                  Height="32"
-                  Margin="5,0,5,0"
-                  VerticalAlignment="Center"
-                  Command="{Binding NewSessionCommand}" />
-                
-            </Grid>
+                <Button Grid.Column="2"
+                Width="50"
+                Height="40"
+                Margin="5,0,5,0"
+                VerticalAlignment="Center"
+                Command="{Binding NewSessionCommand}" >
+
+                    <Image Source="/BroPilot;component/Icons/message_add.png" Width="24" Height="24"  />
+                            </Button>
+
+
+                        </Grid>
             <Grid Grid.Row="2"  Grid.RowSpan="2">
                 <DockPanel Margin="10">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -87,14 +90,15 @@
                                                     </TextBlock>
                                                 </StackPanel>
                                             </StackPanel>
-                                            <Button Grid.Column="1"
-                                                Content="🗑️"
-                                                FontSize="10"
-                                                Width="40"
-                                                Height="32"
-                                                Margin="10,0,0,0"
-                                                VerticalAlignment="Center"
-                                                Command="{Binding DataContext.CloseSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+
+                                            <Button Grid.Column="2"
+                                                 Width="50"
+                                                 Height="40"
+                                                 Margin="5,0,5,0"
+                                                 VerticalAlignment="Center"
+                                                 Command="{Binding DataContext.CloseSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                                                <Image Source="/BroPilot;component/Icons/delete2.png" Width="24" Height="24"  />
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
