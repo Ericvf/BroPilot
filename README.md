@@ -2,8 +2,10 @@
 
 BroPilot is a Visual Studio extension that brings the power of local Large Language Models (LLMs) directly into your development workflow. Unlike cloud-based AI assistants, BroPilot enables intelligent code assistance—such as code completions, explanations, and refactoring suggestions—without sending your code or context to external servers. This ensures privacy, low latency, and full control over your development environment.
 
----
+🚀 [**Install from VS Marketplace**](https://marketplace.visualstudio.com/items?itemName=Ericvf.version123) ✨
 
+
+---
 ![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot.png)
 ---
 
