@@ -61,7 +61,6 @@ namespace BroPilot.ViewModels
             var sessions = sessionManager.LoadSessions();
             var sessionViewModels = sessions.Select(s => MapSessionToViewModel(s));
 
-      
             Application.Current.Dispatcher.Invoke(() =>
             {
                 foreach (var s in sessionViewModels)
@@ -203,89 +202,5 @@ namespace BroPilot.ViewModels
         }
 
         #endregion
-    }
-
-    public interface ISessionManager
-    {
-        Task UpdateSession(Session session);
-
-        Task DeleteSession(Session session);
-
-        IEnumerable<Session> LoadSessions();
-    }
-
-    public class SessionManager : ISessionManager
-    {
-        public IEnumerable<Session> LoadSessions()
-        {
-            string path = GetBasePath();
-            var files = Directory.GetFiles(path, "*.json");
-            var sessions = new List<Session>();
-
-            foreach (var file in files)
-            {
-                try
-                {
-                    var content = File.ReadAllText(file);
-                    var session = JsonSerializer.Deserialize<Session>(content);
-                    if (session != null)
-                    {
-                        sessions.Add(session);
-                    }
-                }
-                catch
-                {
-                    // optioneel: log fout, maar niet laten crashen
-                }
-            }
-
-            return sessions;
-        }
-
-        private static string GetBasePath()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BroPilot");
-        }
-
-        public Task UpdateSession(Session session)
-        {
-            string path = GetBasePath();
-
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var content = JsonSerializer.Serialize(session, options);
-
-            Directory.CreateDirectory(path);
-
-            var fileName = Path.Combine(path, session.Id + ".json");
-            File.WriteAllText(fileName, content);
-
-            return Task.CompletedTask;
-        }
-
-        public Task DeleteSession(Session session)
-        {
-            string path = GetBasePath();
-            var fileName = Path.Combine(path, session.Id + ".json");
-
-            if (File.Exists(fileName))
-            {
-                File.Delete(fileName);
-            }
-
-            return Task.CompletedTask;
-        }
-    }
-
-    public class Session
-    {
-        public string Id { get; set; }
-
-        public string Title { get; set; }
-
-        public Message[] Messages { get; set; }
-
-        public DateTime? Date { get; set; }
-
-        public int TokenCount { get; set; }
     }
 }

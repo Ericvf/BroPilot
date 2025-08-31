@@ -21,6 +21,7 @@ namespace BroPilot
                 .AddSingleton<SessionsWindow>()
                 .AddSingleton<SessionsViewModel>()
                 .AddSingleton<ISessionManager, SessionManager>()
+                .AddSingleton<IModelsManager, ModelsManager>()
                 .AddSingleton<OpenAIEndpointService>()
                 .AddSingleton<ToolWindowState>()
 

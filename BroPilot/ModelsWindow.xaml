@@ -8,6 +8,7 @@
              xmlns:wpf="clr-namespace:BroPilot.Wpf"
              xmlns:md="http://schemas.lepo.co/wpfui/2022/xaml/markdown"
              mc:Ignorable="d" 
+              Unloaded="UserControl_Unloaded"
              d:DesignHeight="600" d:DesignWidth="700"
              d:DataContext="{d:DesignInstance Type=local:ModelsViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>

@@ -20,9 +20,11 @@ namespace BroPilot.Extension
                  );
 
             var toolWindow1Control = serviceProvider.GetRequiredService<ToolWindow1Control>();
-            var sessionViewModel = serviceProvider.GetRequiredService<SessionsViewModel>();
+            var sessionsViewModel = serviceProvider.GetRequiredService<SessionsViewModel>();
+            var modelsViewModel = serviceProvider.GetRequiredService<ModelsViewModel>();
 
-            sessionViewModel.LoadSessions();
+            sessionsViewModel.LoadSessions();
+            modelsViewModel.LoadModels();
 
             Content = toolWindow1Control;
         }
