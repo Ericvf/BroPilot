@@ -22,7 +22,7 @@ namespace BroPilot.Extension
             var toolWindow1Control = serviceProvider.GetRequiredService<ToolWindow1Control>();
             var sessionViewModel = serviceProvider.GetRequiredService<SessionsViewModel>();
 
-            Task.Run(async () => await sessionViewModel.LoadSessions());
+            sessionViewModel.LoadSessions();
 
             Content = toolWindow1Control;
         }

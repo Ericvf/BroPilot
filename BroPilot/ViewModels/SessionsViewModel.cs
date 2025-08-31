@@ -56,9 +56,9 @@ namespace BroPilot.ViewModels
             return chatSession;
         }
 
-        public async Task LoadSessions()
+        public void LoadSessions()
         {
-            var sessions = await sessionManager.LoadSessions();
+            var sessions = sessionManager.LoadSessions();
             var sessionViewModels = sessions.Select(s => MapSessionToViewModel(s));
 
       
@@ -180,6 +180,28 @@ namespace BroPilot.ViewModels
             toolWindowState.ShowChatWindow();
         }
 
+
+        private ICommand closeSessionCommand;
+
+        public ICommand CloseSessionCommand
+        {
+            get
+            {
+                if (closeSessionCommand == null)
+                {
+                    closeSessionCommand = new RelayCommand<ChatSessionViewModel>(CloseSessionHandler);
+                }
+
+                return closeSessionCommand;
+            }
+        }
+
+        private void CloseSessionHandler(ChatSessionViewModel obj)
+        {
+            sessions.Remove(obj);
+            sessionManager.DeleteSession(new Session { Id = obj.Id });
+        }
+
         #endregion
     }
 
@@ -187,12 +209,14 @@ namespace BroPilot.ViewModels
     {
         Task UpdateSession(Session session);
 
-        Task<IEnumerable<Session>> LoadSessions();
+        Task DeleteSession(Session session);
+
+        IEnumerable<Session> LoadSessions();
     }
 
     public class SessionManager : ISessionManager
     {
-        public Task<IEnumerable<Session>> LoadSessions()
+        public IEnumerable<Session> LoadSessions()
         {
             string path = GetBasePath();
             var files = Directory.GetFiles(path, "*.json");
@@ -215,7 +239,7 @@ namespace BroPilot.ViewModels
                 }
             }
 
-            return Task.FromResult<IEnumerable<Session>>(sessions);
+            return sessions;
         }
 
         private static string GetBasePath()
@@ -234,6 +258,19 @@ namespace BroPilot.ViewModels
 
             var fileName = Path.Combine(path, session.Id + ".json");
             File.WriteAllText(fileName, content);
+
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteSession(Session session)
+        {
+            string path = GetBasePath();
+            var fileName = Path.Combine(path, session.Id + ".json");
+
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
 
             return Task.CompletedTask;
         }
