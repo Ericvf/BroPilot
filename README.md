@@ -1,6 +1,10 @@
 # BroPilot
 
-BroPilot is a Visual Studio extension that brings the power of local Large Language Models (LLMs) directly into your development workflow. Unlike cloud-based AI assistants, BroPilot enables intelligent code assistance—such as code completions, explanations, and refactoring suggestions—without sending your code or context to external servers. This ensures privacy, low latency, and full control over your development environment.
+BroPilot is a Visual Studio extension that brings the power of local Large Language Models (LLMs) directly into your development workflow. Unlike cloud-based AI assistants, BroPilot enables intelligent code assistanceâ€”such as code completions, explanations, and refactoring suggestionsâ€”without sending your code or context to external servers. This ensures privacy, low latency, and full control over your development environment.
+
+---
+
+![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot.png)
 
 ---
 
@@ -19,7 +23,7 @@ Modern software development increasingly relies on AI-powered code assistants to
 
 ### 1. **Local LLM Integration**
 - Connects to local LLM servers (such as Ollama, LM Studio, or other compatible backends).
-- No code or context is sent to the cloud—everything stays on your machine.
+- No code or context is sent to the cloudâ€”everything stays on your machine.
 
 ### 2. **Code Explanations**
 - Select code and receive clear, concise explanations powered by your local model.
@@ -30,7 +34,7 @@ Modern software development increasingly relies on AI-powered code assistants to
 - Supports common refactoring patterns and best practices.
 
 ### 4. **Seamless Visual Studio Integration**
-- Native Visual Studio extension—no need to switch tools or editors.
+- Native Visual Studio extensionâ€”no need to switch tools or editors.
 
 ### 5. **Configurable and Extensible**
 - Easily configure the extension to connect to your preferred local LLM backend.
@@ -53,7 +57,7 @@ Modern software development increasingly relies on AI-powered code assistants to
    In Visual Studio, open the BroPilot settings and specify the connection details for your local LLM server.
 
 4. **Start Coding**  
-   Use BroPilot features directly from the editor—trigger completions, request explanations, or refactor code with a click.
+   Use BroPilot features directly from the editorâ€”trigger completions, request explanations, or refactor code with a click.
 
 ---
 
