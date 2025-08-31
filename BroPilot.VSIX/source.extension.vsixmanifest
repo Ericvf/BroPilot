@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BroPilot.Extension.20993d07-f42f-46a8-8d9a-b207219b7a45" Version="0.1" Language="en-US" Publisher="Fex" />
+        <Identity Id="BroPilot.Extension.20993d07-f42f-46a8-8d9a-b207219b7a45" Version="0.2" Language="en-US" Publisher="Ericvf" />
         <DisplayName>BroPilot</DisplayName>
         <Description xml:space="preserve">BroPilot code-assistant </Description>
         <MoreInfo>https://github.com/Ericvf/BroPilot</MoreInfo>
