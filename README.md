@@ -5,7 +5,6 @@ BroPilot is a Visual Studio extension that brings the power of local Large Langu
 ---
 
 ![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot.png)
-
 ---
 
 ## Problem Statement
@@ -28,6 +27,11 @@ BroPilot is engineered for high performance and a smooth user experience, even w
 
 These optimizations collectively ensure that BroPilot feels fast, fluid, and unobtrusive, letting you focus on your code without interruption.
 
+### This method is analyzed in a *11mb* file
+![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot2.png)
+
+### Simple interactions are really fast
+![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot3.png)
 
 ---
 
