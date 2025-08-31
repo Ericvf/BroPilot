@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BroPilot.Extension.20993d07-f42f-46a8-8d9a-b207219b7a45" Version="1.0" Language="en-US" Publisher="Fex" />
-        <DisplayName>BroPilot.Extension</DisplayName>
-        <Description xml:space="preserve">Empty VSIX Project.</Description>
+        <Identity Id="BroPilot.Extension.20993d07-f42f-46a8-8d9a-b207219b7a45" Version="0.1" Language="en-US" Publisher="Fex" />
+        <DisplayName>BroPilot</DisplayName>
+        <Description xml:space="preserve">BroPilot code-assistant </Description>
+        <MoreInfo>https://github.com/Ericvf/BroPilot</MoreInfo>
+        <License>LICENSE</License>
+        <Icon>icon.png</Icon>
+        <Tags>LLM AI Code-Assistant</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
