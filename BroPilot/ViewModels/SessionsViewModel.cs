@@ -48,7 +48,7 @@ namespace BroPilot.ViewModels
             {
                 Id = Guid.NewGuid().ToString(),
                 Date = DateTime.UtcNow,
-                 Title = "New chat"
+                Title = "New chat"
             };
 
             sessions.Add(chatSession);
@@ -71,6 +71,8 @@ namespace BroPilot.ViewModels
             });
             
             ChatSession = this.sessions.OrderByDescending(s => s.Date).FirstOrDefault();
+
+            CreateNewSession();
         }
 
         public async Task UpdateSession(ChatSessionViewModel chatSession)

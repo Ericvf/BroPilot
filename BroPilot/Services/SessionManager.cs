@@ -12,6 +12,9 @@ namespace BroPilot.ViewModels
         public IEnumerable<Session> LoadSessions()
         {
             string path = GetBasePath();
+
+            Directory.CreateDirectory(path);
+
             var files = Directory.GetFiles(path, "*.json");
             var sessions = new List<Session>();
 
