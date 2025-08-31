@@ -1,7 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
+using System.IO.Packaging;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace BroPilot.Extension
 {
@@ -11,9 +15,23 @@ namespace BroPilot.Extension
         public ToolWindow1() : base(null)
         {
             this.Caption = "BroPilot";
-            var serviceProvider = DependencyInjection.BuildServiceProvider();
-            var toolWindow1Control = serviceProvider.GetRequiredService<ToolWindow1Control>();
-            this.Content = toolWindow1Control;
+
+            var serviceProvider2 = DependencyInjection.BuildServiceProvider(
+                 services => services
+                     .AddSingleton<IContextProvider, VisualStudioContextProvider>()
+                 );
+
+            var toolWindow1Control = serviceProvider2.GetRequiredService<ToolWindow1Control>();
+            Content = toolWindow1Control;
         }
+
+        //public async Task InitializeAsync(AsyncPackage package)
+        //{
+        //    await package.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+        //    var dte = (EnvDTE.DTE)await package.GetServiceAsync(typeof(SDTE));
+
+        //}
+
     }
 }

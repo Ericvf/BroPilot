@@ -16,7 +16,7 @@ namespace BroPilot
                 .AddSingleton<ToolWindow1Control>()
                 .AddSingleton<ChatWindow>()
                 .AddSingleton<SessionsViewModel>()
-                .AddSingleton<AgentsViewModel>()
+                .AddSingleton<ModelsViewModel>()
                 .AddSingleton<ChatWindowViewModel>()
                 .AddSingleton<OpenAIEndpointService>()
                 ;

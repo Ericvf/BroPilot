@@ -3,8 +3,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:md="http://schemas.lepo.co/wpfui/2022/xaml/markdown"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    x:Class="BroPilot.Resources"
     xmlns:control="clr-namespace:Wpf.Ui.Markdown.Controls;assembly=Wpf.Ui.Markdown">
-        <!--<ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary.MergedDictionaries>
             <ui:ThemesDictionary />
             <ui:ControlsDictionary />
             <md:ThemesDictionary />
@@ -31,7 +32,8 @@
                           Background="Transparent"
                           Padding="2,0,5,0"
                           Margin="2" CornerRadius="5">
-                            <FlowDocumentScrollViewer PreviewMouseWheel="FlowDocumentScrollViewer_PreviewMouseWheel"
+                        <FlowDocumentScrollViewer 
+                                            PreviewMouseWheel="FlowDocumentScrollViewer_PreviewMouseWheel"
                                                 Document="{TemplateBinding Document}"
                                                 VerticalScrollBarVisibility="Auto"
                                                 HorizontalScrollBarVisibility="Disabled"
@@ -45,10 +47,10 @@
         </Style>
 
         <Style x:Key="{x:Static md:Styles.DocumentStyleKey}" TargetType="{x:Type FlowDocument}">
-            <Setter Property="Foreground" Value="{DynamicResource CardForeground}" />
+            <!--<Setter Property="Foreground" Value="{DynamicResource CardForeground}" />-->
             <Setter Property="FontFamily" Value="{DynamicResource MonoThemeFontFamily}" />
             <Setter Property="PagePadding" Value="5" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="TextAlignment" Value="Left" />
-        </Style>-->
+        </Style>
 </ResourceDictionary>

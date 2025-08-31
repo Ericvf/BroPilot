@@ -13,51 +13,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources.xaml"/>
-                <ui:ThemesDictionary />
-                <ui:ControlsDictionary />
-                <md:ThemesDictionary />
-                <md:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
-
-            <LinearGradientBrush x:Key="GrayPurpleGradient" StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Offset="0" Color="#D4C3E6"/>
-                <GradientStop Offset="1" Color="#BBA2D5"/>
-            </LinearGradientBrush>
-
-            <FontFamily x:Key="MonoThemeFontFamily">Segoe UI</FontFamily>
-            <FontFamily x:Key="DefaultThemeFontFamily">Segoe UI</FontFamily>
-            <SolidColorBrush x:Key="MarkdownHeading1Brush" Color="#333" />
-            <SolidColorBrush x:Key="MarkdownHeading2Brush" Color="#333" />
-            <SolidColorBrush x:Key="MarkdownHeading3Brush" Color="#333" />
-            <SolidColorBrush x:Key="MarkdownHeading4Brush" Color="#333" />
-
-            <Style TargetType="{x:Type control:MarkdownViewer}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type control:MarkdownViewer}">
-                            <Border BorderThickness="0"
-                            Background="Transparent"
-                            Padding="2,0,5,0"
-                            Margin="2" CornerRadius="5">
-                                <FlowDocumentScrollViewer PreviewMouseWheel="FlowDocumentScrollViewer_PreviewMouseWheel"
-                                                  Document="{TemplateBinding Document}"
-                                                  VerticalScrollBarVisibility="Auto"
-                                                  HorizontalScrollBarVisibility="Disabled"
-                                                  Padding="0"
-                                                  Margin="0"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="{x:Static md:Styles.DocumentStyleKey}" TargetType="{x:Type FlowDocument}">
-                <Setter Property="Foreground" Value="{DynamicResource CardForeground}" />
-                <Setter Property="FontFamily" Value="{DynamicResource MonoThemeFontFamily}" />
-                <Setter Property="PagePadding" Value="5" />
-                <Setter Property="FontSize" Value="13" />
-                <Setter Property="TextAlignment" Value="Left" />
-            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 </UserControl>

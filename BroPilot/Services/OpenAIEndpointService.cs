@@ -19,11 +19,11 @@ namespace BroPilot.Services
             httpClient = httpClientFactory.CreateClient();
         }
 
-        public async Task<string> ChatCompletionStream(Agent agent, Message[] messages, Action<string> handler = null)
+        public async Task<string> ChatCompletionStream(Model agent, Message[] messages, Action<string> handler = null)
         {
             var jsonPayload = JsonSerializer.Serialize(new
             {
-                model = agent.Model,
+                model = agent.ModelName,
                 messages,
                 temperature = agent.Temperature,
                 max_tokens = -1,
@@ -89,11 +89,11 @@ namespace BroPilot.Services
             return fullContent;
         }
 
-        public async Task<(Message message, int tokenCount)> ChatCompletion(Agent agent, Message[] messages)
+        public async Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages)
         {
             var x = JsonSerializer.Serialize(new
             {
-                model = agent.Model,
+                model = agent.ModelName,
                 messages,
                 temperature = agent.Temperature,
                 max_tokens = -1,

@@ -4,21 +4,27 @@ using BroPilot.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace BroPilot.ViewModels
 {
     public class ChatWindowViewModel : BaseViewModel
     {
-        private readonly AgentsViewModel agentsViewModel;
+        private readonly ModelsViewModel modelsViewModel;
         private readonly SessionsViewModel sessionViewModel;
         private readonly OpenAIEndpointService openAIEndpointService;
+        private readonly IContextProvider contextProvider;
 
-        public ChatWindowViewModel(SessionsViewModel sessionViewModel, AgentsViewModel agentsViewModel, OpenAIEndpointService openAIEndpointService)
+        public ModelsViewModel ModelsViewModel => modelsViewModel;
+
+        public ChatWindowViewModel(SessionsViewModel sessionViewModel, ModelsViewModel modelsViewModel, OpenAIEndpointService openAIEndpointService, IContextProvider contextProvider)
         {
             this.sessionViewModel = sessionViewModel;
-            this.agentsViewModel = agentsViewModel;
+            this.modelsViewModel = modelsViewModel;
             this.openAIEndpointService = openAIEndpointService;
+            this.contextProvider = contextProvider;
             NewSessionHandler(null);
         }
 
@@ -81,7 +87,20 @@ namespace BroPilot.ViewModels
             }
         }
 
-        public AgentsViewModel AgentsViewModel => agentsViewModel;
+        private ICommand configureCommand;
+
+        public ICommand ConfigureCommand
+        {
+            get
+            {
+                if (configureCommand == null)
+                {
+                    configureCommand = new RelayCommand(ConfigureHandler);
+                }
+
+                return configureCommand;
+            }
+        }
 
         #endregion
 
@@ -117,8 +136,22 @@ namespace BroPilot.ViewModels
             }
         }
 
+        private void ConfigureHandler(object obj)
+        {
+            var newWindow = new Window
+            {
+                Title = "BroPilot - Configure models",
+            };
+
+            newWindow.Content = new ModelsWindow(modelsViewModel);
+            newWindow.Height = 600;
+            newWindow.Width = 700;
+            newWindow.ShowDialog();
+        }
+
         private async void SubmitHandler(object obj)
         {
+
             var message = new MessageViewModel()
             {
                 Role = "user",
@@ -137,13 +170,14 @@ namespace BroPilot.ViewModels
 
             ChatSession.AddMessage(message);
 
-           var x = await openAIEndpointService.ChatCompletionStream(AgentsViewModel.Agent, GetMessagePayload(ChatSession.Messages).ToArray(), (s) => message.Content += s);
+            var newMessages = await GetMessagePayloadAsync(ChatSession.Messages, false);
+            var x = await openAIEndpointService.ChatCompletionStream(ModelsViewModel.Model, newMessages, (s) => message.Content += s);
             message.IsComplete = true;
 
             var time = DateTime.UtcNow - start;
             message.Time = $"generated in " + FormatTimespan(time);
 
-           // if (ChatSession.Title == null || ChatSession.Messages.Count > 6)
+            // if (ChatSession.Title == null || ChatSession.Messages.Count > 6)
             {
                 var messages = ChatSession.Messages.ToList();
                 messages.Add(new MessageViewModel()
@@ -152,28 +186,43 @@ namespace BroPilot.ViewModels
                     Content = "Generate a short title for this conversation in less than 5 words. No other text, no punctuation, no quotes, no markdown. /no_think"
                 });
 
-                var newTitle = await openAIEndpointService.ChatCompletion(AgentsViewModel.Agent, GetMessagePayload(messages).ToArray());
+                newMessages = await GetMessagePayloadAsync(messages, true);
+                var newTitle = await openAIEndpointService.ChatCompletion(ModelsViewModel.Model, newMessages);
                 ChatSession.Title = newTitle.message.content;
                 ChatSession.TokenCount = newTitle.tokenCount;
             }
         }
 
-        private IEnumerable<Message> GetMessagePayload(IEnumerable<MessageViewModel> messages)
+        private async Task<Message[]> GetMessagePayloadAsync(IEnumerable<MessageViewModel> messages, bool skipPrompts)
         {
-            yield return new Message()
+            var result = new List<Message>();
+
+            if (!skipPrompts)
             {
-                role = "system",
-                content = "You are a coding assistant called BroPilot running on a PC with limited resources. Keep your responses and token use as short as possible. /no_think"
-            };
+                var activeDocument = await contextProvider.GetActiveDocument();
+                result.Add(new Message
+                {
+                    role = "system",
+                    content = "You are a coding assistant called BroPilot running on a PC with limited resources. Keep your responses and token use as short as possible. /no_think"
+                });
+                
+                result.Add(new Message
+                {
+                    role = "system",
+                    content = "This is the active document. Do not mention it unless asked. When the user speaks about code, they usually mean the active document: " + Environment.NewLine + activeDocument
+                });
+            }
 
             foreach (var message in messages)
             {
-                yield return new Message()
+                result.Add(new Message
                 {
                     role = message.Role,
                     content = message.Content
-                };
+                });
             }
+
+            return result.ToArray();
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿namespace BroPilot.Models
 {
-    public class Agent
+    public class Model
     {
         public string Name { get; set; }
 
-        public string Model { get; set; }
+        public string ModelName { get; set; }
 
         public int Temperature { get; set; }
 

@@ -121,11 +121,12 @@
                                 Visibility="{Binding Content, Converter={StaticResource NullOrEmptyToVisibilityConverter}}"
                                   Margin="4">
                                 <Grid>
-                                         <!--ParseScripts="{Binding IsComplete}"-->
                                     <md:MarkdownViewer  Margin="12,12,12,12"
                                         Markdown="{Binding Content}"  
-                                        Padding="10"                                 />
-
+                                        ParseScripts="{Binding IsComplete}"
+                                        Padding="10"
+                                    />
+                                    
                                     <TextBlock Text="{Binding Time}" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,6,6" Opacity="0.5"/>
                                 </Grid>
                             </Border>
@@ -156,9 +157,9 @@
             <ProgressBar IsIndeterminate="False" 
                          Value="{Binding ChatSession.TokenCount}" 
                          Minimum="0" 
-                         Maximum="{Binding AgentsViewModel.Agent.MaxTokens}"  
+                         Maximum="{Binding ModelsViewModel.Model.MaxTokens}"  
                          Height="6"
-                         Visibility="{Binding AgentsViewModel.Agent.MaxTokens, Converter={StaticResource ZeroToVisibilityConverter}}"
+                         Visibility="{Binding ModelsViewModel.Model.MaxTokens, Converter={StaticResource ZeroToVisibilityConverter}}"
                          Margin="4,0,4,0" />
 
             <TextBox Grid.Row="1" wpf:TextBoxHelper.Placeholder="Ask BroPilot a question..."
@@ -184,15 +185,17 @@
                    VerticalAlignment="Center"
                    Margin="0,0,4,0"/>-->
 
+             
+
                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Model:"
                            Margin="0,0,10,0"
                            VerticalAlignment="Center" 
                     />
                     <ComboBox
-                        DataContext="{Binding AgentsViewModel}"
-                        ItemsSource="{Binding Agents}"
-                        SelectedValue="{Binding Path=Agent}"
+                        DataContext="{Binding ModelsViewModel}"
+                        ItemsSource="{Binding Models}"
+                        SelectedValue="{Binding Model}"
                         DisplayMemberPath="Name"
                         HorizontalAlignment="Right"
                         MinWidth="0"
@@ -201,6 +204,10 @@
                         Margin="4"
                         Width="Auto"
                     />
+                    <Button Width="Auto" Height="Auto" VerticalAlignment="Center"  HorizontalAlignment="Left"
+                            Command="{Binding ConfigureCommand}">
+                        ⚙️
+                    </Button>
                 </StackPanel>
             </Grid>
 
