@@ -196,8 +196,16 @@ namespace BroPilot.ViewModels
             chatSession.AddMessage(reply);
 
             var newMessages = await GetMessagePayloadAsync(chatSession.Messages, false);
-            var x = await openAIEndpointService.ChatCompletionStream(ModelsViewModel.Model, newMessages, (s) => reply.Content += s);
+
+            try
+            {
+                await openAIEndpointService.ChatCompletionStream(ModelsViewModel.Model, newMessages, (s) => reply.Content += s);
             reply.IsComplete = true;
+            }
+            catch (Exception ex)
+            {
+                reply.Content = "An error occurred: " + ex.Message;
+            }
 
             var time = DateTime.UtcNow - start;
             reply.Time = $"generated in " + FormatTimespan(time);
