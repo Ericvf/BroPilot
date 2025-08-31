@@ -41,7 +41,7 @@
         </LinearGradientBrush>
 
         <Style x:Key="ChatStyle" TargetType="Border">
-            
+
             <Setter Property="Background" Value="{StaticResource ChatBackground}" />
             <!--<Setter Property="BorderBrush" Value="{StaticResource ChatBorder}" />-->
             <Setter Property="BorderThickness" Value="2" />
@@ -68,7 +68,7 @@
         </Style>
 
     </UserControl.Resources>
-    
+
     <Grid Background="{StaticResource GrayPurpleGradient}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -78,9 +78,10 @@
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
+
             <!--Header-->
             <Grid Margin="5" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -88,32 +89,40 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Image Grid.Column="0"
-                        Height="30"
-                        VerticalAlignment="Center"
-                        Margin="5" />
-                <Image Source="/BroPilot;component/__..___001_small.png" />
+
+                <Image Source="/BroPilot;component/__..___001_small.png"  />
                 <TextBlock Grid.Column="1"
-                       Text="{Binding ChatSession.Title, TargetNullValue='Welcome to BroPilot!'}"
+                       Text="{Binding Sessions.ChatSession.Title, TargetNullValue='Welcome to BroPilot!'}"
                        d:Text="Welcome to BroPilot!" 
                        FontSize="18"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
                        TextTrimming="CharacterEllipsis"
                        TextWrapping="NoWrap"
-                       Margin="5" />    
-                <Button Grid.Column="2"
-                    Content="+"
-                    Width="40"
-                    Height="40"
-                    Margin="5"
-                    VerticalAlignment="Center"
-                    Command="{Binding NewSessionCommand}" />
+                       Margin="5,0,0,0" />
+
+                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                    <Button 
+                      Content="➕"
+                      Width="42"
+                      Height="32"
+                      Margin="5,0,5,0"
+                      VerticalAlignment="Center"
+                      Command="{Binding NewSessionCommand}" />
+
+                    <Button Grid.Column="3"
+                        Content="🗩"
+                        Width="42"
+                        Height="32"
+                        Margin="5,0,5,0"
+                        VerticalAlignment="Center"
+                        Command="{Binding OpenSessionsCommand}" />    
+                </StackPanel>
             </Grid>
 
             <!--Main-->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" wpf:AutoScrollBehavior.AutoScroll="True">
-                <ItemsControl Margin="5" ItemsSource="{Binding ChatSession.Messages}" >
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" wpf:AutoScrollBehavior.AutoScroll="True">
+                <ItemsControl Margin="5" ItemsSource="{Binding Sessions.ChatSession.Messages}" >
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border  Style="{StaticResource ChatStyle2}"  HorizontalAlignment="Left"
@@ -126,7 +135,7 @@
                                         ParseScripts="{Binding IsComplete}"
                                         Padding="10"
                                     />
-                                    
+
                                     <TextBlock Text="{Binding Time}" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,6,6" Opacity="0.5"/>
                                 </Grid>
                             </Border>
@@ -145,7 +154,7 @@
                 <TextBlock Text="Hi, what can I do for you?"/>
             </Border>-->
         </Grid>
-        
+
         <!--Input / Footer-->
         <Grid Margin="4"  Grid.Row="2">
             <Grid.RowDefinitions>
@@ -155,7 +164,7 @@
             </Grid.RowDefinitions>
 
             <ProgressBar IsIndeterminate="False" 
-                         Value="{Binding ChatSession.TokenCount}" 
+                         Value="{Binding Sessions.ChatSession.TokenCount}" 
                          Minimum="0" 
                          Maximum="{Binding ModelsViewModel.Model.MaxTokens}"  
                          Height="6"
@@ -185,7 +194,7 @@
                    VerticalAlignment="Center"
                    Margin="0,0,4,0"/>-->
 
-             
+
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Model:"
@@ -212,5 +221,6 @@
             </Grid>
 
         </Grid>
+
     </Grid>
 </UserControl>

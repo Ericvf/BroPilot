@@ -1,9 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 
 namespace BroPilot.ViewModels
 {
     public class ChatSessionViewModel : BaseViewModel
     {
+        public string Id { get; set; }
+        public DateTime? Date { get; set; }
 
         private string title;
         public string Title

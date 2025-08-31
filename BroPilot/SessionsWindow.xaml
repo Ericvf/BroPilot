@@ -1,0 +1,198 @@
+﻿<UserControl x:Class="BroPilot.SessionsWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BroPilot.ViewModels"
+             xmlns:converters="clr-namespace:BroPilot.Converters"
+             xmlns:wpf="clr-namespace:BroPilot.Wpf"
+             xmlns:md="http://schemas.lepo.co/wpfui/2022/xaml/markdown"
+             mc:Ignorable="d" 
+               d:DesignHeight="1000" d:DesignWidth="400"
+             d:DataContext="{d:DesignInstance Type=local:SessionsViewModel, IsDesignTimeCreatable=True}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVisibilityConverter"/>
+            <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!--<Grid Background="{StaticResource GrayPurpleGradient}" Grid.RowSpan="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="140"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            -->
+    <!--Header-->
+    <!--
+            <Grid Margin="5" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Source="/BroPilot;component/__..___001_small.png" />
+                <TextBlock Grid.Column="1"
+                       Text="Sessions" 
+                       FontSize="18"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap"
+                       Margin="5" />
+            </Grid>
+
+            <Grid Grid.Row="2" >
+                <DockPanel Margin="10">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Sessions}" Margin="0,0,15,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="5" Padding="10" CornerRadius="6" Background="#FFF8FAFF" BorderBrush="#DDD" BorderThickness="1">
+                                        <Grid VerticalAlignment="Center">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Vertical" Grid.Column="0">
+                                                <TextBlock FontSize="15" FontWeight="SemiBold" Foreground="#333">
+                    <Hyperlink Command="{Binding DataContext.OpenSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                               CommandParameter="{Binding}">
+                        <Run Text="{Binding Title, TargetNullValue='Welcome to BroPilot!'}"/>
+                    </Hyperlink>
+                                                </TextBlock>
+                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <TextBlock FontSize="12" Foreground="#666">
+                        <Run Text="Date: "/>
+                        <Run Text="{Binding Date, StringFormat={}{0:yyyy-MM-dd HH:mm}, TargetNullValue='N/A'}"/>
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="12" Foreground="#666">
+                        <Run Text=" -"/>
+                                                        <Run Text="Tokens: "/>
+                        <Run Text="{Binding TokenCount}"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <Button Grid.Column="1"
+                    Content="🗑️"
+                                                    FontSize="10"
+                    Width="40"
+                    Height="32"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    Command="{Binding DataContext.CloseSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Grid>
+        </Grid>
+    </Grid>-->
+
+
+    <Grid Background="{StaticResource GrayPurpleGradient}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="140"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!--Header-->
+            <Grid Margin="5" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Source="/BroPilot;component/__..___001_small.png"  />
+                <TextBlock Grid.Column="1"
+                       Text="Sessions"
+                       FontSize="18"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap"
+                       Margin="5,0,0,0" />
+                <Button Grid.Column="3"
+                  Content="➕"
+                  Width="42"
+                  Height="32"
+                  Margin="5,0,5,0"
+                  VerticalAlignment="Center"
+                  Command="{Binding NewSessionCommand}" />
+                
+            </Grid>
+            <Grid Grid.Row="2"  Grid.RowSpan="2">
+                <DockPanel Margin="10">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding SessionsView}" Margin="0,0,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="5" Padding="10" CornerRadius="6" Background="#FFF8FAFF" BorderBrush="#DDD" BorderThickness="1">
+                                        <Grid VerticalAlignment="Center">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Vertical" Grid.Column="0">
+                                                <TextBlock FontSize="15" FontWeight="SemiBold" Foreground="#333">
+                                                    <Hyperlink Command="{Binding DataContext.OpenSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}">
+                                                        <Run Text="{Binding Title, TargetNullValue='Welcome to BroPilot!'}"/>
+                                                    </Hyperlink>
+                                                </TextBlock>
+                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <TextBlock FontSize="12" Foreground="#666">
+                                                         <Run Text="Date: "/>
+                                                         <Run Text="{Binding Date, StringFormat={}{0:yyyy-MM-dd HH:mm}, TargetNullValue='N/A'}"/>
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="12" Foreground="#666">
+                                                          <Run Text=" -"/>
+                                                             <Run Text="Tokens: "/>
+                                                        <Run Text="{Binding TokenCount}"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <Button Grid.Column="1"
+                                                Content="🗑️"
+                                                FontSize="10"
+                                                Width="40"
+                                                Height="32"
+                                                Margin="10,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding DataContext.CloseSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Grid>
+        </Grid>
+
+    </Grid>
+
+</UserControl>

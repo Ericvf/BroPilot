@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BroPilot.Services
@@ -19,74 +20,75 @@ namespace BroPilot.Services
             httpClient = httpClientFactory.CreateClient();
         }
 
-        public async Task<string> ChatCompletionStream(Model agent, Message[] messages, Action<string> handler = null)
+        public Task<string> ChatCompletionStream(Model agent, Message[] messages, Action<string> handler = null)
         {
-            var jsonPayload = JsonSerializer.Serialize(new
+            return Task.Run(async () =>
             {
-                model = agent.ModelName,
-                messages,
-                temperature = agent.Temperature,
-                max_tokens = -1,
-                stream = true,
-                // response_format = new { type = "json_schema" },
-                // response_format = new
-                // {
-                //     type = "json_schema",
-                //     json_schema = schema
-                // }
-            });
-
-            var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage(HttpMethod.Post, agent.Address + "/v1/chat/completions")
-            {
-                Content = requestContent
-            };
-
-            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-
-            var stream = await response.Content.ReadAsStreamAsync();
-            var reader = new StreamReader(stream);
-
-            string fullContent = "";
-            string fullJson = "";
-            string buffer = "";
-
-            while (!reader.EndOfStream)
-            {
-                char[] charBuffer = new char[256];
-                int read = await reader.ReadAsync(charBuffer, 0, charBuffer.Length);
-                if (read == 0) break;
-
-                buffer += new string(charBuffer, 0, read);
-                fullJson += buffer;
-
-                int lineEnd;
-                while ((lineEnd = buffer.IndexOf('\n')) >= 0)
+                var jsonPayload = JsonSerializer.Serialize(new
                 {
-                    string line = buffer.Substring(0, lineEnd).TrimEnd('\r');
-                    buffer = buffer.Substring(lineEnd + 1);
+                    model = agent.ModelName,
+                    messages,
+                    temperature = agent.Temperature,
+                    max_tokens = -1,
+                    stream = true,
+                    // response_format = new { type = "json_schema" },
+                    // response_format = new
+                    // {
+                    //     type = "json_schema",
+                    //     json_schema = schema
+                    // }
+                });
 
-                    if (line.StartsWith("data: "))
+                var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(HttpMethod.Post, agent.Address + "/v1/chat/completions")
+                {
+                    Content = requestContent
+                };
+
+                var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+
+                var stream = await response.Content.ReadAsStreamAsync();
+                var reader = new StreamReader(stream);
+
+                string fullContent = "";
+                string fullJson = "";
+                string buffer = "";
+
+                while (!reader.EndOfStream)
+                {
+                    char[] charBuffer = new char[256];
+                    int read = await reader.ReadAsync(charBuffer, 0, charBuffer.Length);
+                    if (read == 0) break;
+
+                    buffer += new string(charBuffer, 0, read);
+                    fullJson += buffer;
+
+                    int lineEnd;
+                    while ((lineEnd = buffer.IndexOf('\n')) >= 0)
                     {
-                        var json = line.Substring("data: ".Length).Trim();
-                        if (json == "[DONE]")
-                            break;
+                        string line = buffer.Substring(0, lineEnd).TrimEnd('\r');
+                        buffer = buffer.Substring(lineEnd + 1);
 
-                        var node = JsonNode.Parse(json);
-                        var delta = node?["choices"]?[0]?["delta"]?["content"]?.ToString();
-                        if (!string.IsNullOrEmpty(delta))
+                        if (line.StartsWith("data: "))
                         {
-                            handler?.Invoke(delta.ToString());
-                            fullContent += delta;
+                            var json = line.Substring("data: ".Length).Trim();
+                            if (json == "[DONE]")
+                                break;
+
+                            var node = JsonNode.Parse(json);
+                            var delta = node?["choices"]?[0]?["delta"]?["content"]?.ToString();
+                            if (!string.IsNullOrEmpty(delta))
+                            {
+                                handler?.Invoke(delta.ToString());
+                                fullContent += delta;
+                            }
                         }
                     }
                 }
 
-                await Task.Delay(1);
-            }
-
-            return fullContent;
+                return fullContent;
+            });
         }
 
         public async Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages)

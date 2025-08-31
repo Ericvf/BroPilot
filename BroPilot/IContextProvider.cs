@@ -7,5 +7,7 @@ namespace BroPilot
         string GetSolutionName();
 
         Task<string> GetActiveDocument();
+
+        Task<string> GetCurrentMethod();
     }
 }

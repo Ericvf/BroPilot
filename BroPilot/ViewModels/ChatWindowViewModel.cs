@@ -13,34 +13,37 @@ namespace BroPilot.ViewModels
     public class ChatWindowViewModel : BaseViewModel
     {
         private readonly ModelsViewModel modelsViewModel;
-        private readonly SessionsViewModel sessionViewModel;
+        private readonly SessionsViewModel sessionsViewModel;
         private readonly OpenAIEndpointService openAIEndpointService;
         private readonly IContextProvider contextProvider;
+        private readonly ToolWindowState toolWindowState;
 
         public ModelsViewModel ModelsViewModel => modelsViewModel;
+        public SessionsViewModel Sessions => sessionsViewModel;
 
-        public ChatWindowViewModel(SessionsViewModel sessionViewModel, ModelsViewModel modelsViewModel, OpenAIEndpointService openAIEndpointService, IContextProvider contextProvider)
+        public ChatWindowViewModel(SessionsViewModel sessionViewModel, ModelsViewModel modelsViewModel, OpenAIEndpointService openAIEndpointService, IContextProvider contextProvider, ToolWindowState toolWindowState)
         {
-            this.sessionViewModel = sessionViewModel;
+            this.sessionsViewModel = sessionViewModel;
             this.modelsViewModel = modelsViewModel;
             this.openAIEndpointService = openAIEndpointService;
             this.contextProvider = contextProvider;
-            NewSessionHandler(null);
+            this.toolWindowState = toolWindowState;
+            //NewSessionHandler(null);
         }
 
-        private ChatSessionViewModel chatSession;
-        public ChatSessionViewModel ChatSession
-        {
-            get { return chatSession; }
-            set
-            {
-                if (chatSession != value)
-                {
-                    chatSession = value;
-                    OnPropertyChanged(nameof(ChatSession));
-                }
-            }
-        }
+        //private ChatSessionViewModel chatSession;
+        //public ChatSessionViewModel ChatSession
+        //{
+        //    get { return chatSession; }
+        //    set
+        //    {
+        //        if (chatSession != value)
+        //        {
+        //            chatSession = value;
+        //            OnPropertyChanged(nameof(ChatSession));
+        //        }
+        //    }
+        //}
 
         private string prompt = string.Empty;
         public string Prompt
@@ -57,6 +60,23 @@ namespace BroPilot.ViewModels
         }
 
         #region Commands
+
+        private ICommand openSessionsCommand;
+
+        public ICommand OpenSessionsCommand
+        {
+            get
+            {
+                if (openSessionsCommand == null)
+                {
+                    openSessionsCommand = new RelayCommand(OpenSessionsHandler);
+                }
+
+                return openSessionsCommand;
+            }
+        }
+
+
         private ICommand newSessionCommand;
 
         public ICommand NewSessionCommand
@@ -104,10 +124,14 @@ namespace BroPilot.ViewModels
 
         #endregion
 
+        private void OpenSessionsHandler(object obj)
+        {
+            toolWindowState.ShowSessionsWindow();
+        }
+
         private void NewSessionHandler(object obj)
         {
-            var chatSession = sessionViewModel.CreateNewSession();
-            ChatSession = chatSession;
+            sessionsViewModel.CreateNewSession();
         }
 
         private static string FormatTimespan(TimeSpan input)
@@ -151,6 +175,7 @@ namespace BroPilot.ViewModels
 
         private async void SubmitHandler(object obj)
         {
+            var chatSession = sessionsViewModel.ChatSession;
 
             var message = new MessageViewModel()
             {
@@ -158,39 +183,38 @@ namespace BroPilot.ViewModels
                 Content = Prompt
             };
 
-            ChatSession.AddMessage(message);
+            chatSession.AddMessage(message);
             Prompt = string.Empty;
 
             var start = DateTime.UtcNow;
 
-            message = new MessageViewModel()
+            var reply = new MessageViewModel()
             {
                 Role = "assistant",
             };
 
-            ChatSession.AddMessage(message);
+            chatSession.AddMessage(reply);
 
-            var newMessages = await GetMessagePayloadAsync(ChatSession.Messages, false);
-            var x = await openAIEndpointService.ChatCompletionStream(ModelsViewModel.Model, newMessages, (s) => message.Content += s);
-            message.IsComplete = true;
+            var newMessages = await GetMessagePayloadAsync(chatSession.Messages, false);
+            var x = await openAIEndpointService.ChatCompletionStream(ModelsViewModel.Model, newMessages, (s) => reply.Content += s);
+            reply.IsComplete = true;
 
             var time = DateTime.UtcNow - start;
-            message.Time = $"generated in " + FormatTimespan(time);
+            reply.Time = $"generated in " + FormatTimespan(time);
 
-            // if (ChatSession.Title == null || ChatSession.Messages.Count > 6)
+            var messages = chatSession.Messages.ToList();
+            messages.Add(new MessageViewModel()
             {
-                var messages = ChatSession.Messages.ToList();
-                messages.Add(new MessageViewModel()
-                {
-                    Role = "user",
-                    Content = "Generate a short title for this conversation in less than 5 words. No other text, no punctuation, no quotes, no markdown. /no_think"
-                });
+                Role = "user",
+                Content = "Generate a short title for this conversation in less than 5 words. No other text, no punctuation, no quotes, no markdown. /no_think"
+            });
 
-                newMessages = await GetMessagePayloadAsync(messages, true);
-                var newTitle = await openAIEndpointService.ChatCompletion(ModelsViewModel.Model, newMessages);
-                ChatSession.Title = newTitle.message.content;
-                ChatSession.TokenCount = newTitle.tokenCount;
-            }
+            newMessages = await GetMessagePayloadAsync(messages, true);
+            var newTitle = await openAIEndpointService.ChatCompletion(ModelsViewModel.Model, newMessages);
+            chatSession.Title = newTitle.message.content;
+            chatSession.TokenCount = newTitle.tokenCount;
+
+            await sessionsViewModel.UpdateSession(chatSession);
         }
 
         private async Task<Message[]> GetMessagePayloadAsync(IEnumerable<MessageViewModel> messages, bool skipPrompts)
@@ -205,7 +229,14 @@ namespace BroPilot.ViewModels
                     role = "system",
                     content = "You are a coding assistant called BroPilot running on a PC with limited resources. Keep your responses and token use as short as possible. /no_think"
                 });
-                
+
+                var activeMethod = await contextProvider.GetCurrentMethod();
+                result.Add(new Message
+                {
+                    role = "system",
+                    content = "This is the active method. Do not mention it unless asked. When the user speaks about code, they usually mean the active method:" + activeMethod
+                });
+
                 result.Add(new Message
                 {
                     role = "system",

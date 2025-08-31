@@ -15,10 +15,15 @@ namespace BroPilot
             services
                 .AddSingleton<ToolWindow1Control>()
                 .AddSingleton<ChatWindow>()
-                .AddSingleton<SessionsViewModel>()
-                .AddSingleton<ModelsViewModel>()
                 .AddSingleton<ChatWindowViewModel>()
+                .AddSingleton<ModelsWindow>()
+                .AddSingleton<ModelsViewModel>()
+                .AddSingleton<SessionsWindow>()
+                .AddSingleton<SessionsViewModel>()
+                .AddSingleton<ISessionManager, SessionManager>()
                 .AddSingleton<OpenAIEndpointService>()
+                .AddSingleton<ToolWindowState>()
+
                 ;
 
             return services.BuildServiceProvider();

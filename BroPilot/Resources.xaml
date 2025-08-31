@@ -53,4 +53,9 @@
             <Setter Property="FontSize" Value="13" />
             <Setter Property="TextAlignment" Value="Left" />
         </Style>
+
+    <Style x:Key="{x:Static md:Styles.CodeStyleKey}" TargetType="{x:Type Run}">
+        <Setter Property="Foreground" Value="{DynamicResource MarkdownRunBrush}" />
+        <Setter Property="FontFamily" Value="{DynamicResource MonoThemeFontFamily}" />
+    </Style>
 </ResourceDictionary>

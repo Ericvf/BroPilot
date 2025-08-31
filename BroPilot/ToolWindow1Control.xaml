@@ -6,9 +6,9 @@
     xmlns:md="http://schemas.lepo.co/wpfui/2022/xaml/markdown"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:control="clr-namespace:Wpf.Ui.Markdown.Controls;assembly=Wpf.Ui.Markdown"
-    mc:Ignorable="d"
+    mc:Ignorable="d" 
     d:DesignHeight="1000" d:DesignWidth="400"
-    Name="MyToolWindow">
+    Name="MyToolWindow" Content="{Binding ContentControl}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
