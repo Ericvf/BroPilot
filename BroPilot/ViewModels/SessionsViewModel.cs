@@ -71,8 +71,10 @@ namespace BroPilot.ViewModels
             });
             
             ChatSession = this.sessions.OrderByDescending(s => s.Date).FirstOrDefault();
-
-            CreateNewSession();
+            if (ChatSession == null)
+            {
+                CreateNewSession();
+            }
         }
 
         public async Task UpdateSession(ChatSessionViewModel chatSession)
