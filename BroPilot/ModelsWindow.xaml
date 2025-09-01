@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BroPilot.ViewModels"
+             xmlns:models="clr-namespace:BroPilot.Models"
              xmlns:converters="clr-namespace:BroPilot.Converters"
              xmlns:wpf="clr-namespace:BroPilot.Wpf"
              xmlns:md="http://schemas.lepo.co/wpfui/2022/xaml/markdown"
@@ -95,6 +96,14 @@
                                                     <TextBlock Text="Max Tokens:" Width="100" VerticalAlignment="Center"/>
                                                     <TextBox Text="{Binding MaxTokens, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" FontSize="12"/>
                                                 </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,10,10">
+                                                    <TextBlock Text="API Type:" Width="100" VerticalAlignment="Center"/>
+                                                    <ComboBox
+                                                        Width="100"
+                                                        FontSize="12"
+                                                        ItemsSource="{Binding Source={x:Static models:ApiTypeEnumValues.Values}}"
+                                                        SelectedItem="{Binding Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                    </StackPanel>
 
                                             </StackPanel>
                                         </Border>

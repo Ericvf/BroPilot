@@ -23,6 +23,7 @@ namespace BroPilot
                 .AddSingleton<ISessionManager, SessionManager>()
                 .AddSingleton<IModelsManager, ModelsManager>()
                 .AddSingleton<OpenAIEndpointService>()
+                .AddSingleton<OllamaEndpointService>()
                 .AddSingleton<ToolWindowState>()
 
                 ;

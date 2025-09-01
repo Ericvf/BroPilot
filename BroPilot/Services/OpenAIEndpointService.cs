@@ -6,12 +6,11 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace BroPilot.Services
 {
-    public class OpenAIEndpointService
+    public class OpenAIEndpointService : IEndpointService
     {
         private HttpClient httpClient;
 
@@ -91,40 +90,37 @@ namespace BroPilot.Services
             });
         }
 
-        public async Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages)
+        public Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages)
         {
-            var x = JsonSerializer.Serialize(new
+            return Task.Run(async () =>
             {
-                model = agent.ModelName,
-                messages,
-                temperature = agent.Temperature,
-                max_tokens = -1,
-                stream = false,
-                // response_format = new { type = "json_schema" },
-                // response_format = new
-                // {
-                //     type = "json_schema",
-                //     json_schema = schema
-                // }
+                var x = JsonSerializer.Serialize(new
+                {
+                    model = agent.ModelName,
+                    messages,
+                    temperature = agent.Temperature,
+                    max_tokens = -1,
+                    stream = false,
+                });
+
+                var requestContent = new StringContent(x, Encoding.UTF8, "application/json");
+
+                var response = await httpClient.PostAsync(agent.Address + "/v1/chat/completions", requestContent);
+                var responseBody = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
+
+                var node = JsonNode.Parse(responseBody);
+                var messageContent = node?["choices"]?[0]?["message"]?["content"]?.ToString() ?? string.Empty;
+                var tokens = node?["usage"]?["total_tokens"]?.ToString() ?? string.Empty;
+
+                if (messageContent?.Contains("<think>") == true)
+                {
+                    messageContent = Regex.Replace(messageContent, @"<think>[\s\S]*?</think>\s*", "").Trim();
+                }
+
+                var returnMessage = new Message { role = "assistant", content = messageContent };
+                return (returnMessage, Convert.ToInt32(tokens));
             });
-
-            var requestContent = new StringContent(x, Encoding.UTF8, "application/json");
-
-            var response = await httpClient.PostAsync(agent.Address + "/v1/chat/completions", requestContent);
-            var responseBody = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
-
-            var node = JsonNode.Parse(responseBody);
-            var messageContent = node?["choices"]?[0]?["message"]?["content"]?.ToString() ?? string.Empty;
-            var tokens = node?["usage"]?["total_tokens"]?.ToString() ?? string.Empty;
-
-            if (messageContent?.Contains("<think>") == true)
-            {
-                messageContent = Regex.Replace(messageContent, @"<think>[\s\S]*?</think>\s*", "").Trim();
-            }
-
-            var returnMessage = new Message { role = "assistant", content = messageContent };
-            return (returnMessage, Convert.ToInt32(tokens));
         }
     }
 }

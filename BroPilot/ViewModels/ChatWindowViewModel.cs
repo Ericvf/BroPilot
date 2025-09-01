@@ -15,35 +15,22 @@ namespace BroPilot.ViewModels
         private readonly ModelsViewModel modelsViewModel;
         private readonly SessionsViewModel sessionsViewModel;
         private readonly OpenAIEndpointService openAIEndpointService;
+        private readonly OllamaEndpointService ollamaEndpointService;
         private readonly IContextProvider contextProvider;
         private readonly ToolWindowState toolWindowState;
 
         public ModelsViewModel ModelsViewModel => modelsViewModel;
         public SessionsViewModel Sessions => sessionsViewModel;
 
-        public ChatWindowViewModel(SessionsViewModel sessionViewModel, ModelsViewModel modelsViewModel, OpenAIEndpointService openAIEndpointService, IContextProvider contextProvider, ToolWindowState toolWindowState)
+        public ChatWindowViewModel(SessionsViewModel sessionViewModel, ModelsViewModel modelsViewModel, OpenAIEndpointService openAIEndpointService, OllamaEndpointService ollamaEndpointService, IContextProvider contextProvider, ToolWindowState toolWindowState)
         {
             this.sessionsViewModel = sessionViewModel;
             this.modelsViewModel = modelsViewModel;
             this.openAIEndpointService = openAIEndpointService;
+            this.ollamaEndpointService = ollamaEndpointService;
             this.contextProvider = contextProvider;
             this.toolWindowState = toolWindowState;
-            //NewSessionHandler(null);
         }
-
-        //private ChatSessionViewModel chatSession;
-        //public ChatSessionViewModel ChatSession
-        //{
-        //    get { return chatSession; }
-        //    set
-        //    {
-        //        if (chatSession != value)
-        //        {
-        //            chatSession = value;
-        //            OnPropertyChanged(nameof(ChatSession));
-        //        }
-        //    }
-        //}
 
         private string prompt = string.Empty;
         public string Prompt
@@ -197,10 +184,14 @@ namespace BroPilot.ViewModels
 
             var newMessages = await GetMessagePayloadAsync(chatSession.Messages, false);
 
+            var t = ModelsViewModel.Model.Type;
+
+            var endpointService = GetEndpointService(t);
+
             try
             {
-                await openAIEndpointService.ChatCompletionStream(ModelsViewModel.Model, newMessages, (s) => reply.Content += s);
-            reply.IsComplete = true;
+                await endpointService.ChatCompletionStream(ModelsViewModel.Model, newMessages, (s) => reply.Content += s);
+                reply.IsComplete = true;
             }
             catch (Exception ex)
             {
@@ -218,11 +209,23 @@ namespace BroPilot.ViewModels
             });
 
             newMessages = await GetMessagePayloadAsync(messages, true);
-            var newTitle = await openAIEndpointService.ChatCompletion(ModelsViewModel.Model, newMessages);
+            var newTitle = await endpointService.ChatCompletion(ModelsViewModel.Model, newMessages);
             chatSession.Title = newTitle.message.content;
             chatSession.TokenCount = newTitle.tokenCount;
 
             await sessionsViewModel.UpdateSession(chatSession);
+        }
+
+        private IEndpointService GetEndpointService(Model.ApiType t)
+        {
+            if (t == Model.ApiType.Ollama)
+            {
+                return ollamaEndpointService;
+            }
+            else
+            {
+                return openAIEndpointService;
+            }
         }
 
         private async Task<Message[]> GetMessagePayloadAsync(IEnumerable<MessageViewModel> messages, bool skipPrompts)
@@ -231,7 +234,6 @@ namespace BroPilot.ViewModels
 
             if (!skipPrompts)
             {
-                var activeDocument = await contextProvider.GetActiveDocument();
                 result.Add(new Message
                 {
                     role = "system",
@@ -245,11 +247,12 @@ namespace BroPilot.ViewModels
                     content = "This is the active method. Do not mention it unless asked. When the user speaks about code, they usually mean the active method:" + activeMethod
                 });
 
-                result.Add(new Message
-                {
-                    role = "system",
-                    content = "This is the active document. Do not mention it unless asked. When the user speaks about code, they usually mean the active document: " + Environment.NewLine + activeDocument
-                });
+                //var activeDocument = await contextProvider.GetActiveDocument();
+                //result.Add(new Message
+                //{
+                //    role = "system",
+                //    content = "This is the active document. Do not mention it unless asked. When the user speaks about code, they usually mean the active document: " + Environment.NewLine + activeDocument
+                //});
             }
 
             foreach (var message in messages)
