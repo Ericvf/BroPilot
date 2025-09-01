@@ -87,6 +87,7 @@ namespace BroPilot.Services
                 var node = JsonNode.Parse(responseBody);
 
                 var messageContent = node?["message"]?["content"]?.ToString() ?? string.Empty;
+                var promptTokenCount = node?["prompt_eval_count"]?.ToString() ?? string.Empty;
 
                 if (messageContent.Contains("<think>"))
                 {
@@ -94,8 +95,8 @@ namespace BroPilot.Services
                 }
 
                 var returnMessage = new Message { role = "assistant", content = messageContent };
-
-                return (returnMessage, 0);
+                int.TryParse(promptTokenCount, out int count);
+                return (returnMessage, count);
             });
         }
     }
