@@ -247,12 +247,12 @@ namespace BroPilot.ViewModels
                     content = "This is the active method. Do not mention it unless asked. When the user speaks about code, they usually mean the active method:" + activeMethod
                 });
 
-                //var activeDocument = await contextProvider.GetActiveDocument();
-                //result.Add(new Message
-                //{
-                //    role = "system",
-                //    content = "This is the active document. Do not mention it unless asked. When the user speaks about code, they usually mean the active document: " + Environment.NewLine + activeDocument
-                //});
+                var activeDocument = await contextProvider.GetActiveDocument();
+                result.Add(new Message
+                {
+                    role = "system",
+                    content = "This is the active document. Do not mention it unless asked. When the user speaks about code, they usually mean the active document: " + Environment.NewLine + activeDocument
+                });
             }
 
             foreach (var message in messages)
