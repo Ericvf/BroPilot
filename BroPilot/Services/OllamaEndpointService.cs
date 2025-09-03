@@ -1,6 +1,7 @@
 ﻿using BroPilot.Models;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -71,6 +72,17 @@ namespace BroPilot.Services
         {
             return Task.Run(async () =>
             {
+                if (schema != null)
+                {
+                    var schemaInstruction = new Message
+                    {
+                        role = "system",
+                        content = $"Respond ONLY in strict JSON format that matches this schema:\n\n{JsonSerializer.Serialize(schema)}"
+                    };
+
+                    messages = new[] { schemaInstruction }.Concat(messages).ToArray();
+                }
+
                 var jsonPayload = JsonSerializer.Serialize(new
                 {
                     model = agent.ModelName,
@@ -88,6 +100,7 @@ namespace BroPilot.Services
 
                 var messageContent = node?["message"]?["content"]?.ToString() ?? string.Empty;
 
+                // Remove hidden reasoning (<think>...</think>) if present
                 if (messageContent.Contains("<think>"))
                 {
                     messageContent = Regex.Replace(messageContent, @"<think>[\s\S]*?</think>\s*", "").Trim();
@@ -101,5 +114,6 @@ namespace BroPilot.Services
                 return (returnMessage, tokenCount);
             });
         }
+
     }
 }
