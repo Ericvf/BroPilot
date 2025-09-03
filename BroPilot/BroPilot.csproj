@@ -6,6 +6,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Resources\AnalyzeCodeAction_Schema.txt" />
+	  <EmbeddedResource Include="Resources\UserPrompt_AnalyzeCodeAction.txt" />
+	  <EmbeddedResource Include="Resources\SystemPrompt_AnalyzeCodeAction.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
@@ -17,6 +23,7 @@
 	  <Resource Include="Icons\add2.png" />
 	  <Resource Include="Icons\delete2.png" />
 	  <Resource Include="Icons\gear.png" />
+	  <Resource Include="Icons\magicwand.png" />
 	  <Resource Include="Icons\messages.png" />
 	  <Resource Include="Icons\message_add.png" />
 	  <Resource Include="__..___001_small.png" />

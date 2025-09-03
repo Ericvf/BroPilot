@@ -1,0 +1,130 @@
+﻿{
+  "name": "myschema",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "actions": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            {
+              "title": "AddMethodAction",
+              "type": "object",
+              "properties": {
+                "action": {
+                  "const": "addmethod"
+                },
+                "file": {
+                  "type": "string"
+                },
+                "classname": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "motivation": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "action",
+                "file",
+                "classname",
+                "code",
+                "motivation"
+              ]
+            },
+            {
+              "title": "AddClassAction",
+              "type": "object",
+              "properties": {
+                "action": {
+                  "const": "addclass"
+                },
+                "file": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "motivation": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "action",
+                "file",
+                "code",
+                "motivation"
+              ]
+            },
+            {
+              "title": "ReplaceMethodAction",
+              "type": "object",
+              "properties": {
+                "action": {
+                  "const": "replacemethod"
+                },
+                "file": {
+                  "type": "string"
+                },
+                "classname": {
+                  "type": "string"
+                },
+                "method": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "motivation": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "action",
+                "file",
+                "classname",
+                "method",
+                "code",
+                "motivation"
+              ]
+            },
+            {
+              "title": "ReplaceClassAction",
+              "type": "object",
+              "properties": {
+                "action": {
+                  "const": "replaceclass"
+                },
+                "file": {
+                  "type": "string"
+                },
+                "classname": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "motivation": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "action",
+                "file",
+                "classname",
+                "code",
+                "motivation"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "required": [
+      "actions"
+    ]
+  }
+}

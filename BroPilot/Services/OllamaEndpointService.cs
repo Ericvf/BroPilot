@@ -67,7 +67,7 @@ namespace BroPilot.Services
             });
         }
 
-        public Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages)
+        public Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages, object schema = null)
         {
             return Task.Run(async () =>
             {

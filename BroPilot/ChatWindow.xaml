@@ -137,6 +137,7 @@
                                   Margin="4">
                                 <Grid>
                                     <md:MarkdownViewer  Margin="12,12,12,12"
+                                        ActionCommand="{Binding DataContext.OpenEditorActionCommand,  RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         Markdown="{Binding Content}"  
                                         ParseScripts="{Binding IsComplete}"
                                         Padding="10"

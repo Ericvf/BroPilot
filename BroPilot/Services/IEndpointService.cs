@@ -8,6 +8,6 @@ namespace BroPilot.Services
     {
         Task<string> ChatCompletionStream(Model agent, Message[] messages, Action<string> handler = null);
 
-        Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages);
+        Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages, object schema = null);
     }
 }

@@ -25,6 +25,8 @@ namespace BroPilot
                 .AddSingleton<OpenAIEndpointService>()
                 .AddSingleton<OllamaEndpointService>()
                 .AddSingleton<ToolWindowState>()
+                .AddSingleton<ResourceHelper>()
+                .AddSingleton<AnalyzeCodeActionService>()
 
                 ;
 

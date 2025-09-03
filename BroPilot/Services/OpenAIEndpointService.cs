@@ -30,12 +30,6 @@ namespace BroPilot.Services
                     temperature = agent.Temperature,
                     max_tokens = -1,
                     stream = true,
-                    // response_format = new { type = "json_schema" },
-                    // response_format = new
-                    // {
-                    //     type = "json_schema",
-                    //     json_schema = schema
-                    // }
                 });
 
                 var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
@@ -90,20 +84,25 @@ namespace BroPilot.Services
             });
         }
 
-        public Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages)
+        public Task<(Message message, int tokenCount)> ChatCompletion(Model agent, Message[] messages, object schema = null)
         {
             return Task.Run(async () =>
             {
-                var x = JsonSerializer.Serialize(new
+                var jsonPayload = JsonSerializer.Serialize(new
                 {
                     model = agent.ModelName,
                     messages,
                     temperature = agent.Temperature,
                     max_tokens = -1,
                     stream = false,
+                    response_format = new
+                    {
+                        type = schema == null ? "text" : "json_schema",
+                        json_schema = JsonNode.Parse(schema.ToString())
+                    }
                 });
 
-                var requestContent = new StringContent(x, Encoding.UTF8, "application/json");
+                var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
                 var response = await httpClient.PostAsync(agent.Address + "/v1/chat/completions", requestContent);
                 var responseBody = await response.Content.ReadAsStringAsync();

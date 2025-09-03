@@ -1,0 +1,9 @@
+﻿You are given a file with code and a code change. Suggest how to apply the change.
+-Analyze only classes and methods. Ignore using statements, comments, or formatting.
+-Choose one action per change: addmethod, replacemethod, addclass, replaceclass.
+
+========= 'file with code': {currentFileName} =========
+{activeDocument}
+
+========= 'code change' ====================
+{code}

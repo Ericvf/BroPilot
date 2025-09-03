@@ -1,9 +1,13 @@
-﻿using BroPilot.Models;
+﻿using BroPilot.Actions;
+using BroPilot.Models;
 using BroPilot.Services;
 using BroPilot.Wpf;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -18,11 +22,13 @@ namespace BroPilot.ViewModels
         private readonly OllamaEndpointService ollamaEndpointService;
         private readonly IContextProvider contextProvider;
         private readonly ToolWindowState toolWindowState;
+        private readonly ResourceHelper resourceHelper;
+        private readonly AnalyzeCodeActionService analyzeCodeActionService;
 
         public ModelsViewModel ModelsViewModel => modelsViewModel;
         public SessionsViewModel Sessions => sessionsViewModel;
 
-        public ChatWindowViewModel(SessionsViewModel sessionViewModel, ModelsViewModel modelsViewModel, OpenAIEndpointService openAIEndpointService, OllamaEndpointService ollamaEndpointService, IContextProvider contextProvider, ToolWindowState toolWindowState)
+        public ChatWindowViewModel(SessionsViewModel sessionViewModel, ModelsViewModel modelsViewModel, OpenAIEndpointService openAIEndpointService, OllamaEndpointService ollamaEndpointService, IContextProvider contextProvider, ToolWindowState toolWindowState, ResourceHelper resourceHelper, AnalyzeCodeActionService analyzeCodeActionService)
         {
             this.sessionsViewModel = sessionViewModel;
             this.modelsViewModel = modelsViewModel;
@@ -30,6 +36,8 @@ namespace BroPilot.ViewModels
             this.ollamaEndpointService = ollamaEndpointService;
             this.contextProvider = contextProvider;
             this.toolWindowState = toolWindowState;
+            this.resourceHelper = resourceHelper;
+            this.analyzeCodeActionService = analyzeCodeActionService;
         }
 
         private string prompt = string.Empty;
@@ -47,6 +55,20 @@ namespace BroPilot.ViewModels
         }
 
         #region Commands
+        private ICommand openEditorAction;
+
+        public ICommand OpenEditorActionCommand
+        {
+            get
+            {
+                if (openEditorAction == null)
+                {
+                    openEditorAction = new RelayCommand<string>(OpenEditorActionHandler);
+                }
+
+                return openEditorAction;
+            }
+        }
 
         private ICommand openSessionsCommand;
 
@@ -62,7 +84,6 @@ namespace BroPilot.ViewModels
                 return openSessionsCommand;
             }
         }
-
 
         private ICommand newSessionCommand;
 
@@ -116,50 +137,6 @@ namespace BroPilot.ViewModels
             toolWindowState.ShowSessionsWindow();
         }
 
-        private void NewSessionHandler(object obj)
-        {
-            sessionsViewModel.CreateNewSession();
-        }
-
-        private static string FormatTimespan(TimeSpan input)
-        {
-            var seconds = input.TotalSeconds;
-
-            if (seconds < 60)
-            {
-                string formatted = seconds % 1 == 0
-                    ? $"{(int)seconds} second{(seconds != 1 ? "s" : "")}"
-                    : $"{seconds:0.0} seconds";
-
-                return formatted;
-            }
-            else if (seconds < 3600)
-            {
-                int mins = (int)(seconds / 60);
-                int sec = (int)(seconds % 60);
-                return $"{mins} minute{(mins != 1 ? "s" : "")} and {sec} second{(sec != 1 ? "s" : "")}";
-            }
-            else
-            {
-                int hrs = (int)(seconds / 3600);
-                int secs = (int)(seconds % 3600);
-                return $"{hrs} hour{(hrs != 1 ? "s" : "")} and {secs} second{(secs != 1 ? "s" : "")}";
-            }
-        }
-
-        private void ConfigureHandler(object obj)
-        {
-            var newWindow = new Window
-            {
-                Title = "BroPilot - Configure models",
-            };
-
-            newWindow.Content = new ModelsWindow(modelsViewModel);
-            newWindow.Height = 600;
-            newWindow.Width = 700;
-            newWindow.ShowDialog();
-        }
-
         private async void SubmitHandler(object obj)
         {
             var chatSession = sessionsViewModel.ChatSession;
@@ -196,24 +173,118 @@ namespace BroPilot.ViewModels
             catch (Exception ex)
             {
                 reply.Content = "An error occurred: " + ex.Message;
+                return;
             }
 
             var time = DateTime.UtcNow - start;
             reply.Time = $"generated in " + FormatTimespan(time);
 
-            var messages = chatSession.Messages.ToList();
-            messages.Add(new MessageViewModel()
+            try
             {
-                Role = "user",
-                Content = "Generate a short title for this conversation in less than 5 words. No other text, no punctuation, no quotes, no markdown. /no_think"
-            });
+                var messages = chatSession.Messages.ToList();
+                messages.Add(new MessageViewModel()
+                {
+                    Role = "user",
+                    Content = "Generate a short title for this conversation in less than 5 words. No other text, no punctuation, no quotes, no markdown. /no_think"
+                });
 
-            newMessages = await GetMessagePayloadAsync(messages, true);
-            var newTitle = await endpointService.ChatCompletion(ModelsViewModel.Model, newMessages);
-            chatSession.Title = newTitle.message.content;
-            chatSession.TokenCount = newTitle.tokenCount;
+
+                newMessages = await GetMessagePayloadAsync(messages, true);
+                var newTitle = await endpointService.ChatCompletion(ModelsViewModel.Model, newMessages);
+                chatSession.Title = newTitle.message.content;
+                chatSession.TokenCount = newTitle.tokenCount;
+            }
+            catch { }
 
             await sessionsViewModel.UpdateSession(chatSession);
+        }
+
+        private async void OpenEditorActionHandler(string code)
+        {
+            var start = DateTime.UtcNow;
+            try
+            {
+                var currentFileName = contextProvider.GetCurrentFileName();
+                var endpointService = GetEndpointService(ModelsViewModel.Model.Type);
+                var activeDocument = await contextProvider.GetActiveDocument();
+
+                var systemPrompt_AnalyzeCodeAction = resourceHelper.ReadResourceAsString("BroPilot.Resources.SystemPrompt_AnalyzeCodeAction.txt");
+                var userPrompt_AnalyzeCodeAction = resourceHelper.ReadResourceAsString("BroPilot.Resources.UserPrompt_AnalyzeCodeAction.txt");
+                userPrompt_AnalyzeCodeAction = userPrompt_AnalyzeCodeAction.Replace("{currentFileName}", currentFileName);
+                userPrompt_AnalyzeCodeAction = userPrompt_AnalyzeCodeAction.Replace("{activeDocument}", activeDocument);
+                userPrompt_AnalyzeCodeAction = userPrompt_AnalyzeCodeAction.Replace("{code}", code);
+
+                var messages = new Message[]
+                {
+                new Message()
+                {
+                    role = "system",
+                    content = systemPrompt_AnalyzeCodeAction
+                },
+                new Message()
+                {
+                    role = "user",
+                    content = userPrompt_AnalyzeCodeAction
+                }
+                };
+                var schema_AnalyzeCodeAction = resourceHelper.ReadResourceAsString("BroPilot.Resources.AnalyzeCodeAction_Schema.txt");
+                var result = await endpointService.ChatCompletion(ModelsViewModel.Model, messages, schema_AnalyzeCodeAction);
+
+                var analyzeCodeActionContainer = JsonSerializer.Deserialize<ActionContainer>(result.message.content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                var results = new List<string>();
+                foreach (var action in analyzeCodeActionContainer.Actions)
+                {
+                    analyzeCodeActionService.ExecuteAction(action);
+                    results.Add($"{action.Summary}: {action.Motivation}");
+                }
+
+                if (results.Count > 0)
+                {
+                    Send(string.Join(Environment.NewLine, results));
+                }
+                else
+                {
+                    Send($"Sorry. Tried to determine how to change `{currentFileName}` but are unable to. 🤷");
+                }
+            }
+            catch  (Exception ex) {
+                Send($"Sorry. Tried to determine how to change the current file but are unable to. Something went wrong: " + ex.Message.ToString());
+            }
+
+            await sessionsViewModel.UpdateSession(sessionsViewModel.ChatSession);
+
+            void Send(string content)
+            {
+                var reply = new MessageViewModel()
+                {
+                    Role = "assistant",
+                    Content = content
+                };
+                var time = DateTime.UtcNow - start;
+                reply.Time = $"generated in " + FormatTimespan(time);
+
+
+                sessionsViewModel.ChatSession.AddMessage(reply);
+            }
+        }
+
+        private void NewSessionHandler(object obj)
+        {
+            sessionsViewModel.CreateNewSession();
+        }
+
+        private void ConfigureHandler(object obj)
+        {
+            var newWindow = new Window
+            {
+                Title = "BroPilot - Configure models",
+            };
+
+            newWindow.Content = new ModelsWindow(modelsViewModel);
+            newWindow.Height = 600;
+            newWindow.Width = 700;
+            newWindow.ShowDialog();
         }
 
         private IEndpointService GetEndpointService(Model.ApiType t)
@@ -265,6 +336,32 @@ namespace BroPilot.ViewModels
             }
 
             return result.ToArray();
+        }
+
+        private static string FormatTimespan(TimeSpan input)
+        {
+            var seconds = input.TotalSeconds;
+
+            if (seconds < 60)
+            {
+                string formatted = seconds % 1 == 0
+                    ? $"{(int)seconds} second{(seconds != 1 ? "s" : "")}"
+                    : $"{seconds:0.0} seconds";
+
+                return formatted;
+            }
+            else if (seconds < 3600)
+            {
+                int mins = (int)(seconds / 60);
+                int sec = (int)(seconds % 60);
+                return $"{mins} minute{(mins != 1 ? "s" : "")} and {sec} second{(sec != 1 ? "s" : "")}";
+            }
+            else
+            {
+                int hrs = (int)(seconds / 3600);
+                int secs = (int)(seconds % 3600);
+                return $"{hrs} hour{(hrs != 1 ? "s" : "")} and {secs} second{(secs != 1 ? "s" : "")}";
+            }
         }
     }
 }
