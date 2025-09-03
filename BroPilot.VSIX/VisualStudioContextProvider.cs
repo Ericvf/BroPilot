@@ -133,6 +133,7 @@ namespace BroPilot
         public async Task AddClass(string file, string classname, string code)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            code = TrimCode(code);
 
             //var docView = await VS.Documents.GetActiveDocumentViewAsync();
             //var componentModel = await VS.Services.GetComponentModelAsync();
@@ -187,6 +188,7 @@ namespace BroPilot
         public async Task AddMethod(string file, string classname, string code)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            code = TrimCode(code);
 
             //var docView = await VS.Documents.GetActiveDocumentViewAsync();
             //if (docView?.TextView == null)
@@ -240,6 +242,7 @@ namespace BroPilot
         public async Task ReplaceClass(string file, string classname, string code)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            code = TrimCode(code);
 
             //var docView = await VS.Documents.GetActiveDocumentViewAsync();
             //if (docView?.TextView == null)
@@ -269,8 +272,6 @@ namespace BroPilot
             if (sourceClass == null)
                 return;
 
-            if (code.Contains("\\n"))
-                code = code.Replace("\\n", "\n");
 
             var replacementClass = SyntaxFactory.ParseMemberDeclaration(code) as ClassDeclarationSyntax;
             if (replacementClass == null)
@@ -291,8 +292,11 @@ namespace BroPilot
             await VS.Commands.ExecuteAsync("Edit.FormatDocument");
         }
 
+
         public async Task ReplaceMethod(string file, string classname, string method, string code)
         {
+            code = TrimCode(code);
+
             // Switch to main thread, required for VS services
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -381,6 +385,13 @@ namespace BroPilot
             }
 
             return dte;
+        }
+
+        private static string TrimCode(string code)
+        {
+            if (code.Contains("\\n"))
+                code = code.Replace("\\n", "\n");
+            return code;
         }
 
         private static string ConvertFolderSeparator(string input) => input.Replace('/', '\\');
