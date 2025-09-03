@@ -97,8 +97,8 @@ namespace BroPilot.Services
                     stream = false,
                     response_format = new
                     {
-                        type = schema == null ? "text" : "json_schema",
-                        json_schema = JsonNode.Parse(schema.ToString())
+                        type = schema != null ? "json_schema": "text",
+                        json_schema = schema != null ? JsonNode.Parse(schema.ToString()) : null
                     }
                 });
 
