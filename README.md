@@ -8,6 +8,8 @@ BroPilot is a Visual Studio extension that brings the power of local Large Langu
 ---
 ![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot.png)
 ---
+![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot4.png)
+
 
 ## Problem Statement
 
@@ -61,6 +63,22 @@ These optimizations collectively ensure that BroPilot feels fast, fluid, and uno
 - All processing is performed locally; no data leaves your machine.
 - Ideal for organizations with strict compliance or confidentiality requirements.
 
+### 7. "Try" Button Feature
+
+This feature enables users to apply code blocks directly within the current file in a sophisticated, embedded way. It leverages Visual Studio’s internal APIs for safe and context-aware code insertion.
+
+Key Capabilities:
+- Add class or method: Generate and insert new classes or methods into the current C# file.
+- Replace class or method: Replace existing code with suggested implementations using intelligent generation.
+
+Limitations:
+- Language Support: Currently limited to C# files.
+- Solution Context: The feature works only when the file is part of an active Visual Studio solution.
+
+![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot4.png)
+
+When BroPilot Try tries to apply the changes, it will output its decision and motivation.
+
 ---
 
 ## Getting Started
@@ -84,6 +102,7 @@ These optimizations collectively ensure that BroPilot feels fast, fluid, and uno
 - Visual Studio 2022 or later
 - .NET Framework 4.8 and/or .NET 8 (for project compatibility)
 - A running local LLM server (Ollama, LM Studio, or compatible)
+- Lowest GPU I tried: RTX2070 Super 8gb (used Qwen3-4b)
 
 ---
 
