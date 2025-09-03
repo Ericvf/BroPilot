@@ -81,6 +81,25 @@ When BroPilot Try tries to apply the changes, it will output its decision and mo
 
 ---
 
+SQL Server Management Studio (SSMS) Support
+
+BroPilot is no longer limited to Visual Studio—developers and database professionals can now benefit from its local AI assistance directly inside SQL Server Management Studio. This integration makes it easier than ever to understand, write, and refactor SQL queries with the same privacy-first approach.
+
+Key Capabilities in SSMS:
+
+Query Explanations – Select SQL statements and instantly get clear explanations of what the query does.
+
+Query Suggestions & Refactoring – Improve readability, performance, or maintainability of SQL queries with locally powered AI suggestions.
+
+Seamless Workflow – BroPilot integrates naturally into SSMS, so you can work with your databases without switching tools.
+
+Same Privacy, Same Performance – Just like in Visual Studio, all processing happens locally. No queries or schema data are sent to external servers.
+
+This makes BroPilot a valuable companion not only for software developers, but also for database administrators, analysts, and anyone working extensively with SQL Server.
+
+![screenshot](https://github.com/Ericvf/BroPilot/blob/main/screenshot5.png)
+
+--- 
 ## Getting Started
 
 1. **Install BroPilot**  
