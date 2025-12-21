@@ -328,6 +328,11 @@ namespace BroPilot.ViewModels
 
             foreach (var message in messages)
             {
+                if (message.Content == null)
+                {
+                    continue; // OpenAI over Open WebUI, fails on null with: data: {"error": {"detail": "argument of type 'NoneType' is not iterable"}}
+                }
+
                 result.Add(new Message
                 {
                     role = message.Role,
